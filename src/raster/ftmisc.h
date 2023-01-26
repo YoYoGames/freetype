@@ -43,8 +43,13 @@
   typedef signed int     FT_Int;
   typedef unsigned int   FT_UInt;
   typedef signed long    FT_Long;
-  typedef unsigned long  FT_ULong;
-  typedef signed long    FT_F26Dot6;
+#if _WIN64
+  typedef unsigned __int64  FT_ULong;
+  typedef signed __int64  FT_F26Dot6;
+#else
+  typedef unsigned long FT_ULong;
+  typedef unsigned long FT_F26Dot6;
+#endif
   typedef int            FT_Error;
 
 
