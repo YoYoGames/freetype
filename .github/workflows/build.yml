@@ -1,0 +1,55 @@
+name: Build
+
+on:
+  push:
+
+  pull_request:
+
+env:
+  # Path to the solution file relative to the root of the project.
+  SOLUTION_FILE_PATH: .
+
+  # Configuration type to build.
+  # You can convert this to a build matrix if you need coverage of multiple configuration types.
+  # https://docs.github.com/actions/learn-github-actions/managing-complex-workflows#using-a-build-matrix
+  BUILD_CONFIGURATION: Release
+
+permissions:
+  contents: read
+
+jobs:
+  windows_debug:
+    runs-on: windows-2022
+
+    steps:
+    - uses: actions/checkout@v3
+
+    - name: Add MSBuild to PATH
+      uses: microsoft/setup-msbuild@v1.0.2
+
+    - run: MSBuild.exe -t:Rebuild -p:Configuration=Debug -p:Platform=x64  -p:UserDefines=FT_DEBUG_LOGGING  builds/windows/vc2010/freetype.vcxproj
+    - name: Upload a Build Artifact
+    - uses: actions/upload-artifact@v3.1.2
+      with:
+
+        name: windows-debug-x64
+        path: objs/x64/Debug/freetype.dll
+        if-no-files-found: error
+       
+  windows_release:
+    runs-on: windows-2022
+
+    steps:
+    - uses: actions/checkout@v3
+
+    - name: Add MSBuild to PATH
+      uses: microsoft/setup-msbuild@v1.0.2
+
+    - run: MSBuild.exe -t:Rebuild -p:Configuration=Release -p:Platform=x64  -p:UserDefines=NDEBUG  builds/windows/vc2010/freetype.vcxproj
+    - name: Upload a Build Artifact
+    - uses: actions/upload-artifact@v3.1.2
+      with:
+
+        name: windows-release-x64
+        path: objs/x64/Release/freetype.dll
+        if-no-files-found: error
