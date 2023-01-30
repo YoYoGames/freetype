@@ -22,31 +22,32 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ windows-2022, ubuntu-22.04, macos-12 ]
+        os: [ windows, ubuntu, macos ]
         config: [ Release, Debug ]
-    runs-on: ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}-latest
+    name: "freetype_${{ matrix.os }}_${{ matrix.config }}"
     steps:
     - uses: actions/checkout@v3
     - run: cmake -B build -D BUILD_SHARED_LIBS=true -D CMAKE_BUILD_TYPE=${{ matrix.config }}
     - run: cmake --build build --config ${{ matrix.config }}
     - uses: actions/upload-artifact@v3.1.2
       with:
-        name: ${{ matrix.os }}_${{ matrix.config }}
+        name: freetype_${{ matrix.os }}_${{ matrix.config }}
         path: build/${{ matrix.config }}
         if-no-files-found: error
-      if: matrix.os == 'windows-2022'
+      if: matrix.os == 'windows'
     - uses: actions/upload-artifact@v3.1.2
       with:
-        name: ${{ matrix.os }}_${{ matrix.config }}
+        name: freetype_${{ matrix.os }}_${{ matrix.config }}
         path: build/*.so
         if-no-files-found: error
-      if: matrix.os == 'ubuntu-22.04'
+      if: matrix.os == 'ubuntu'
     - uses: actions/upload-artifact@v3.1.2
       with:
-        name: ${{ matrix.os }}_${{ matrix.config }}
+        name: freetype_${{ matrix.os }}_${{ matrix.config }}
         path: build/*.dylib
         if-no-files-found: error
-      if: matrix.os == 'macos-12'
+      if: matrix.os == 'macos'
 
   vendor_package:
     needs:
