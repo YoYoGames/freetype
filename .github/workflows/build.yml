@@ -45,3 +45,69 @@ jobs:
         name: windows-release-x64
         path: objs/x64/Release/freetype.dll
         if-no-files-found: error
+
+  osx_debug:
+    runs-on: macos-12
+
+    steps:
+    - uses: actions/checkout@v3
+
+    - name: Add MSBuild to PATH
+      uses: microsoft/setup-msbuild@v1.0.2
+
+    - run: cmake -B build -D BUILD_SHARED_LIBS=true -D CMAKE_BUILD_TYPE=Debug
+    - run: make -j `nproc`
+      working-directory: build
+    - uses: actions/upload-artifact@v3.1.2
+      with:
+
+        name: osx-debug-x64
+        path: build/*.dylib
+        if-no-files-found: error
+
+  osx_release:
+    runs-on: macos-12
+
+    steps:
+    - uses: actions/checkout@v3
+
+    - run: cmake -B build -D BUILD_SHARED_LIBS=true -D CMAKE_BUILD_TYPE=Release
+    - run: make -j `nproc`
+      working-directory: build
+    - uses: actions/upload-artifact@v3.1.2
+      with:
+
+        name: osx-release-x64
+        path: build/*.dylib
+        if-no-files-found: error
+
+  linux_release:
+    runs-on: ubuntu-22.04
+
+    steps:
+    - uses: actions/checkout@v3
+
+    - run: cmake -B build -D BUILD_SHARED_LIBS=true -D CMAKE_BUILD_TYPE=Release
+    - run: make -j `nproc`
+      working-directory: build
+    - uses: actions/upload-artifact@v3.1.2
+      with:
+
+        name: linux-release-x64
+        path: build/*.so
+        if-no-files-found: error
+
+  linux_debug:
+    runs-on: ubuntu-22.04
+
+    steps:
+    - uses: actions/checkout@v3
+    - run: cmake -B build -D BUILD_SHARED_LIBS=true -D CMAKE_BUILD_TYPE=Debug
+    - run: make -j `nproc`
+      working-directory: build
+    - uses: actions/upload-artifact@v3.1.2
+      with:
+
+        name: linux-debug-x64
+        path: build/*.so
+        if-no-files-found: error
