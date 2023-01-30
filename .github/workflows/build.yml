@@ -63,8 +63,8 @@ jobs:
     - run: MSBuild.exe -t:Rebuild -p:Configuration=${{ matrix.config }} -p:Platform=arm64 builds/windows/vc2010/freetype.vcxproj
     - uses: actions/upload-artifact@v3.1.2
       with:
-        name: freetype-arm64-windows-${{ matrix.config }}
-        path: build/${{ matrix.config }}
+        name: freetype-aarch64-windows-${{ matrix.config }}
+        path: objs/ARM64/${{ matrix.config }}
         if-no-files-found: error
 
   build_linux_arm:
