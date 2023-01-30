@@ -34,6 +34,19 @@ jobs:
         name: ${{ matrix.os }}_${{ matrix.config }}
         path: build/${{ matrix.config }}
         if-no-files-found: error
+      if: os == 'windows-2022'
+    - uses: actions/upload-artifact@v3.1.2
+      with:
+        name: ${{ matrix.os }}_${{ matrix.config }}
+        path: build/*.so
+        if-no-files-found: error
+      if: os == 'ubuntu-22.04'
+    - uses: actions/upload-artifact@v3.1.2
+      with:
+        name: ${{ matrix.os }}_${{ matrix.config }}
+        path: build/*.dylib
+        if-no-files-found: error
+      if: os == 'macos-12'
 
   vendor_package:
     needs:
