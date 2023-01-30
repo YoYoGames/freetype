@@ -11,154 +11,41 @@ on:
 permissions:
   contents: read
 
+
+
+
+
+
 jobs:
-  windows_debug:
-    runs-on: windows-2022
+
+  build:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ windows-2022, ubuntu-22.04, macos-12 ]
+        config: [ Release, Debug ]
+    runs-on: ${{ matrix.os }}
     steps:
     - uses: actions/checkout@v3
-    - name: Add MSBuild to PATH
-      uses: microsoft/setup-msbuild@v1.0.2
-    - run: MSBuild.exe -t:Rebuild -p:Configuration=Debug -p:Platform=x64  -p:UserDefines=DEBUG  builds/windows/vc2010/freetype.vcxproj
+    - run: cmake -B build -D BUILD_SHARED_LIBS=true -D CMAKE_BUILD_TYPE=${{ matrix.config }}
+    - run: cmake --build build --config ${{ matrix.config }}
     - uses: actions/upload-artifact@v3.1.2
       with:
-
-        name: windows-debug-x64
-        path: objs/x64/Debug/freetype.dll
-        if-no-files-found: error
-       
-  windows_release:
-    runs-on: windows-2022
-    steps:
-    - uses: actions/checkout@v3
-    - name: Add MSBuild to PATH
-      uses: microsoft/setup-msbuild@v1.0.2
-
-    - run: MSBuild.exe -t:Rebuild -p:Configuration=Release -p:Platform=x64  -p:UserDefines=NDEBUG  builds/windows/vc2010/freetype.vcxproj
-    - uses: actions/upload-artifact@v3.1.2
-      with:
-        name: windows-release-x64
-        path: objs/x64/Release/freetype.dll
-        if-no-files-found: error
-
-  osx_debug:
-    runs-on: macos-12
-    steps:
-    - uses: actions/checkout@v3
-    - run: cmake -B build -D BUILD_SHARED_LIBS=true -D CMAKE_BUILD_TYPE=Debug
-    - run: make -j `nproc`
-      working-directory: build
-    - uses: actions/upload-artifact@v3.1.2
-      with:
-
-        name: osx-debug-x64
-        path: build/*.dylib
-        if-no-files-found: error
-
-  osx_release:
-    runs-on: macos-12
-    steps:
-    - uses: actions/checkout@v3
-    - run: cmake -B build -D BUILD_SHARED_LIBS=true -D CMAKE_BUILD_TYPE=Release
-    - run: make -j `nproc`
-      working-directory: build
-    - uses: actions/upload-artifact@v3.1.2
-      with:
-        name: osx-release-x64
-        path: build/*.dylib
-        if-no-files-found: error
-
-  linux_release:
-    runs-on: ubuntu-22.04
-    steps:
-    - uses: actions/checkout@v3
-    - run: cmake -B build -D BUILD_SHARED_LIBS=true -D CMAKE_BUILD_TYPE=Release
-    - run: make -j `nproc`
-      working-directory: build
-    - uses: actions/upload-artifact@v3.1.2
-      with:
-
-        name: linux-release-x64
-        path: build/*.so
-        if-no-files-found: error
-
-  linux_debug:
-    runs-on: ubuntu-22.04
-    steps:
-    - uses: actions/checkout@v3
-    - run: cmake -B build -D BUILD_SHARED_LIBS=true -D CMAKE_BUILD_TYPE=Debug
-    - run: make -j `nproc`
-      working-directory: build
-    - uses: actions/upload-artifact@v3.1.2
-      with:
-        name: linux-debug-x64
-        path: build/*.so
+        name: ${{ matrix.os }}_${{ matrix.config }}
+        path: build/${{ matrix.config }}
         if-no-files-found: error
 
   vendor_package:
     needs:
-      - linux_debug
-      - linux_release
-      - osx_debug
-      - osx_release
-      - windows_debug
-      - windows_release
+      - build
     runs-on: ubuntu-22.04
     steps:
     - uses: actions/download-artifact@v3.0.2
       with:
-        name: linux-debug-x64
-        path: freetype/linux/x64/Debug
-    - uses: actions/download-artifact@v3.0.2
-      with:
-        name: linux-release-x64
-        path: freetype/linux/x64/Release
-    - uses: actions/download-artifact@v3.0.2
-      with:
-        name: osx-release-x64
-        path: freetype/osx/x64/Release
-    - uses: actions/download-artifact@v3.0.2
-      with:
-        name: osx-debug-x64
-        path: freetype/osx/x64/Debug
-    - uses: actions/download-artifact@v3.0.2
-      with:
-        name: windows-debug-x64
-        path: freetype/windows/x64/Debug
-    - uses: actions/download-artifact@v3.0.2
-      with:
-        name: windows-release-x64
-        path: freetype/windows/x64/Release
+        path: freetype
     - uses: actions/upload-artifact@v3.1.2
       with:
-        name: freetype
+        name: freetype_vendor_package_all_builds
         path: freetype
         if-no-files-found: error
 
-  osx_debug_arm64:
-    runs-on: macos-12
-    continue-on-error: true
-    steps:
-    - uses: actions/checkout@v3
-    - run: cmake -B build -D BUILD_SHARED_LIBS=true -D CMAKE_BUILD_TYPE=Debug -DCMAKE_OSX_ARCHITECTURES="arm64"
-    - run: make -j `nproc`
-      working-directory: build
-    - uses: actions/upload-artifact@v3.1.2
-      with:
-
-        name: osx-debug-arm64
-        path: build/*.dylib
-        if-no-files-found: error
-
-  osx_release_arm64:
-    runs-on: macos-12
-    continue-on-error: true
-    steps:
-    - uses: actions/checkout@v3
-    - run: cmake -B build -D BUILD_SHARED_LIBS=true -D CMAKE_BUILD_TYPE=Debug -DCMAKE_OSX_ARCHITECTURES="arm64"
-    - run: make -j `nproc`
-      working-directory: build
-    - uses: actions/upload-artifact@v3.1.2
-      with:
-        name: osx-release-arm64
-        path: build/*.dylib
-        if-no-files-found: error
