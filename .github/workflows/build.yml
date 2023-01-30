@@ -18,40 +18,69 @@ permissions:
 
 jobs:
 
-  build:
+  build_x86:
     strategy:
       fail-fast: false
       matrix:
         os: [ windows, ubuntu, macos ]
         config: [ Release, Debug ]
     runs-on: ${{ matrix.os }}-latest
-    name: "freetype_${{ matrix.os }}_${{ matrix.config }}"
+    name: "freetype x86 ${{ matrix.os }} ${{ matrix.config }}"
     steps:
     - uses: actions/checkout@v3
     - run: cmake -B build -D BUILD_SHARED_LIBS=true -D CMAKE_BUILD_TYPE=${{ matrix.config }}
     - run: cmake --build build --config ${{ matrix.config }}
     - uses: actions/upload-artifact@v3.1.2
       with:
-        name: freetype_${{ matrix.os }}_${{ matrix.config }}
+        name: freetype-x86_64-${{ matrix.os }}-${{ matrix.config }}
         path: build/${{ matrix.config }}
         if-no-files-found: error
       if: matrix.os == 'windows'
     - uses: actions/upload-artifact@v3.1.2
       with:
-        name: freetype_${{ matrix.os }}_${{ matrix.config }}
+        name: freetype-x86_64-${{ matrix.os }}-${{ matrix.config }}
         path: build/*.so
         if-no-files-found: error
       if: matrix.os == 'ubuntu'
     - uses: actions/upload-artifact@v3.1.2
       with:
-        name: freetype_${{ matrix.os }}_${{ matrix.config }}
+        name: freetype-x86_64-${{ matrix.os }}-${{ matrix.config }}
         path: build/*.dylib
         if-no-files-found: error
       if: matrix.os == 'macos'
 
+
+  build_linux_arm:
+    strategy:
+      fail-fast: false
+      matrix:
+        arch: [ armv7, aarch64 ]
+        config: [ Release, Debug ]
+    runs-on: ubuntu-latest
+    name: "freetype ${{ matrix.arch }} ubuntu ${{ matrix.config }}"
+    steps:
+    - uses: actions/checkout@v3
+    - name: Run on architecture
+      uses: uraimo/run-on-arch-action@v2.5.0
+      with:
+        arch: ${{ matrix.arch }}
+        distro: ubuntu_latest
+        run: |
+          cmake -B build -D BUILD_SHARED_LIBS=true -D CMAKE_BUILD_TYPE=${{ matrix.config }}
+          cmake --build build --config ${{ matrix.config }}
+    - uses: actions/upload-artifact@v3.1.2
+      with:
+        name: freetype-${{ matrix.arch }}-ubuntu-${{ matrix.config }}
+        path: build/*.so
+        if-no-files-found: error
+      if: matrix.os == 'macos'
+
+
+
   vendor_package:
     needs:
-      - build
+      - build_x86
+      - build_linux_arm
     runs-on: ubuntu-22.04
     steps:
     - uses: actions/download-artifact@v3.0.2
