@@ -67,7 +67,7 @@ jobs:
         distro: ubuntu_latest
         run: |
           apt-get update
-          apt-get install -y cmake build-essentials
+          apt-get install -y cmake build-essential
           cmake -B build -D BUILD_SHARED_LIBS=true -D CMAKE_BUILD_TYPE=${{ matrix.config }}
           cmake --build build --config ${{ matrix.config }}
     - uses: actions/upload-artifact@v3.1.2
