@@ -5,14 +5,8 @@ on:
 
   pull_request:
 
-env:
-  # Path to the solution file relative to the root of the project.
-  SOLUTION_FILE_PATH: .
 
-  # Configuration type to build.
-  # You can convert this to a build matrix if you need coverage of multiple configuration types.
-  # https://docs.github.com/actions/learn-github-actions/managing-complex-workflows#using-a-build-matrix
-  BUILD_CONFIGURATION: Release
+
 
 permissions:
   contents: read
@@ -28,7 +22,6 @@ jobs:
       uses: microsoft/setup-msbuild@v1.0.2
 
     - run: MSBuild.exe -t:Rebuild -p:Configuration=Debug -p:Platform=x64  -p:UserDefines=FT_DEBUG_LOGGING  builds/windows/vc2010/freetype.vcxproj
-    - name: Upload a Build Artifact
     - uses: actions/upload-artifact@v3.1.2
       with:
 
@@ -46,7 +39,6 @@ jobs:
       uses: microsoft/setup-msbuild@v1.0.2
 
     - run: MSBuild.exe -t:Rebuild -p:Configuration=Release -p:Platform=x64  -p:UserDefines=NDEBUG  builds/windows/vc2010/freetype.vcxproj
-    - name: Upload a Build Artifact
     - uses: actions/upload-artifact@v3.1.2
       with:
 
