@@ -21,7 +21,7 @@ jobs:
     - name: Add MSBuild to PATH
       uses: microsoft/setup-msbuild@v1.0.2
 
-    - run: MSBuild.exe -t:Rebuild -p:Configuration=Debug -p:Platform=x64  -p:UserDefines=FT_DEBUG_LOGGING  builds/windows/vc2010/freetype.vcxproj
+    - run: MSBuild.exe -t:Rebuild -p:Configuration=Debug -p:Platform=x64  -p:UserDefines=DEBUG  builds/windows/vc2010/freetype.vcxproj
     - uses: actions/upload-artifact@v3.1.2
       with:
 
