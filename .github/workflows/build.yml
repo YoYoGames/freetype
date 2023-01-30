@@ -25,7 +25,7 @@ jobs:
         os: [ windows, ubuntu, macos ]
         config: [ Release, Debug ]
     runs-on: ${{ matrix.os }}-latest
-    name: "x86 ${{ matrix.os }} ${{ matrix.config }}"
+    name: "x86_64 ${{ matrix.os }} ${{ matrix.config }}"
     steps:
     - uses: actions/checkout@v3
     - run: cmake -B build -D BUILD_SHARED_LIBS=true -D CMAKE_BUILD_TYPE=${{ matrix.config }}
@@ -49,6 +49,23 @@ jobs:
         if-no-files-found: error
       if: matrix.os == 'macos'
 
+  build_windows_arm64:
+    strategy:
+      fail-fast: false
+      matrix:
+        config: [ Release, Debug ]
+    runs-on: windows-latest
+    name: "aarch64 windows ${{ matrix.config }}"
+    steps:
+    - uses: actions/checkout@v3
+    - name: Add MSBuild to PATH
+      uses: microsoft/setup-msbuild@v1.0.2
+    - run: MSBuild.exe -t:Rebuild -p:Configuration=${{ matrix.config }} -p:Platform=arm64 builds/windows/vc2010/freetype.vcxproj
+    - uses: actions/upload-artifact@v3.1.2
+      with:
+        name: freetype-arm64-windows-${{ matrix.config }}
+        path: build/${{ matrix.config }}
+        if-no-files-found: error
 
   build_linux_arm:
     strategy:
@@ -75,6 +92,8 @@ jobs:
         name: freetype-${{ matrix.arch }}-ubuntu-${{ matrix.config }}
         path: build/*.so
         if-no-files-found: error
+
+
 
 
   vendor_package:
