@@ -38,13 +38,13 @@ jobs:
     - uses: actions/upload-artifact@v3.1.2
       with:
         name: freetype-x86_64-${{ matrix.os }}-${{ matrix.config }}
-        path: build/*.so
+        path: build/*.a
         if-no-files-found: error
       if: matrix.os == 'ubuntu'
     - uses: actions/upload-artifact@v3.1.2
       with:
         name: freetype-x86_64-${{ matrix.os }}-${{ matrix.config }}
-        path: build/*.dylib
+        path: build/*.a
         if-no-files-found: error
       if: matrix.os == 'macos'
 
@@ -89,7 +89,7 @@ jobs:
     - uses: actions/upload-artifact@v3.1.2
       with:
         name: freetype-${{ matrix.arch }}-ubuntu-${{ matrix.config }}
-        path: build/*.so
+        path: build/*.a
         if-no-files-found: error
 
 
