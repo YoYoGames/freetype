@@ -99,22 +99,20 @@ jobs:
         arch: [ aarch64 ]
         config: [ Release, Debug ]
     runs-on: [self-hosted, macOS]
-    name: "${{ matrix.arch }} ubuntu ${{ matrix.config }}"
+    name: "${{ matrix.arch }} mac ${{ matrix.config }}"
     steps:
     - uses: actions/checkout@v3
     - name: Run on architecture
       uses: uraimo/run-on-arch-action@v2.5.0
       with:
         arch: ${{ matrix.arch }}
-        distro: ubuntu_latest
         run: |
-          apt-get update
-          apt-get install -y cmake build-essential
+          arch -arm64 brew install cmake
           cmake -B build -D BUILD_SHARED_LIBS=false -D CMAKE_BUILD_TYPE=${{ matrix.config }}
           cmake --build build --config ${{ matrix.config }}
     - uses: actions/upload-artifact@v3.1.2
       with:
-        name: freetype-${{ matrix.arch }}-ubuntu-${{ matrix.config }}
+        name: freetype-${{ matrix.arch }}-mac-${{ matrix.config }}
         path: build/*.a
         if-no-files-found: error
 
