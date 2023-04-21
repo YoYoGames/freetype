@@ -105,7 +105,7 @@ jobs:
     - name: Run on architecture
       run: |
         arch -arm64 brew install cmake
-        cmake -B build -D BUILD_SHARED_LIBS=true -D CMAKE_BUILD_TYPE=${{ matrix.config }}
+        cmake -B build -D BUILD_SHARED_LIBS=true -D CMAKE_BUILD_TYPE=${{ matrix.config }} -D CMAKE_OSX_ARCHITECTURES=arm64
         cmake --build build --config ${{ matrix.config }}
     - uses: actions/upload-artifact@v3.1.2
       with:
@@ -118,6 +118,7 @@ jobs:
       - build_x86
       - build_linux_arm
       - build_windows_arm64
+      - build_mac_arm64
     runs-on: ubuntu-22.04
     steps:
     - uses: actions/download-artifact@v3.0.2
