@@ -124,7 +124,6 @@ jobs:
     - name: Setup Meson
       run: |
         export PKG_CONFIG_PATH="/usr/local/opt/icu4c/lib/pkgconfig:/usr/local/opt/libffi/lib/pkgconfig"
-        ccache --version
         meson setup build \
           -Dauto_features=enabled \
           -Ddocs=disabled \
