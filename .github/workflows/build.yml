@@ -105,11 +105,12 @@ jobs:
       run: |
         arch -arm64 brew install \
           harfbuzz \
+          libpng \
           pkg-config \
           cmake
     - name: Setup Paths
       run: |
-        export PKG_CONFIG_PATH="/opt/homebrew/Cellar/harfbuzz/6.0.0/lib/pkgconfig"
+        export PKG_CONFIG_PATH="/opt/homebrew/Cellar/harfbuzz/7.3.0/lib/pkgconfig"
     - uses: actions/checkout@v3
     - name: Run on architecture
       run: |
