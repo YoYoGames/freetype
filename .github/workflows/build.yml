@@ -110,7 +110,7 @@ jobs:
         export HOMEBREW_NO_AUTO_UPDATE=1
         export HOMEBREW_NO_INSTALL_CLEANUP=1
         arch -arm64 brew install \
-          icu4c
+          icu4c \
           cairo \
           freetype \
           glib \
