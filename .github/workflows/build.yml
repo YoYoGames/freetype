@@ -124,7 +124,7 @@ jobs:
       run: pip3 install fonttools gcovr==5.0
     - name: Setup Meson
       run: |
-        export PKG_CONFIG_PATH="/usr/local/opt/icu4c/lib/pkgconfig:/usr/local/opt/libffi/lib/pkgconfig"
+        export PKG_CONFIG_PATH="/opt/homebrew/Cellar/icu4c/72.1/lib/pkgconfig:/usr/local/opt/libffi/lib/pkgconfig"
         meson setup build \
           -Dauto_features=enabled \
           -Ddocs=disabled \
