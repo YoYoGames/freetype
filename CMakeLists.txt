@@ -236,6 +236,8 @@ endif ()
 # Add local cmake modules
 list(APPEND CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/builds/cmake)
 
+message("system: ${CMAKE_SYSTEM_PREFIX_PATH}")
+list(APPEND CMAKE_PREFIX_PATH /opt/homebrew/Cellar/)
 
 if (BUILD_FRAMEWORK)
   if (NOT "${CMAKE_GENERATOR}" STREQUAL "Xcode")
