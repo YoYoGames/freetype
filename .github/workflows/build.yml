@@ -110,7 +110,7 @@ jobs:
           cmake
     - name: Setup Paths
       run: |
-        export PKG_CONFIG_PATH="/opt/homebrew/Cellar/harfbuzz/7.3.0/lib/pkgconfig"
+        export PKG_CONFIG_PATH="/opt/homebrew/Cellar/harfbuzz/7.3.0/lib/pkgconfig:/opt/homebrew/Cellar/libpng/1.6.39/lib/pkgconfig"
     - uses: actions/checkout@v3
     - name: Run on architecture
       run: |
