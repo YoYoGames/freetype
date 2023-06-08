@@ -98,7 +98,7 @@ jobs:
       matrix:
         arch: [ aarch64 ]
         config: [ Release, Debug ]
-    runs-on: [macOS, ARM64]
+    runs-on: [self-hosted, macOS]
     name: "${{ matrix.arch }} macos ${{ matrix.config }}"
     steps:
 #    - name: Checkout Harfbuzz
@@ -135,14 +135,6 @@ jobs:
 #          -Db_coverage=true \
 #    - name: Build
 #      run: meson compile -Cbuild
-#    - name: Test
-#      run: meson test --print-errorlogs -Cbuild
-#    - name: Generate Coverage
-#      run: ninja -Cbuild coverage-xml
-#    - name: Upload Coverage
-#      uses: codecov/codecov-action@v3
-#      with:
-#        file: build/meson-logs/coverage.xml
     - uses: actions/checkout@v3
     - name: Run on architecture
       run: |
