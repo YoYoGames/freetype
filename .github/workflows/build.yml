@@ -104,7 +104,7 @@ jobs:
     - name: Install Dependencies
       run: |
         arch -arm64 brew install \
-          https://raw.githubusercontent.com/Homebrew/homebrew-core/58cea6e8d924899baecd286f0e08f63cb4f77918/Formula/harfbuzz.rb \
+          harfbuzz \
           pkg-config \
           cmake
     - name: Setup Paths
