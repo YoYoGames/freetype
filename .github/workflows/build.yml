@@ -103,7 +103,8 @@ jobs:
     steps:
     - name: Install Dependencies
       run: |
-        arch -arm64 brew install \
+        arch -arm64 brew --prefix
+        arch -arm64 brew reinstall \
           harfbuzz \
           libpng \
           pkg-config \
