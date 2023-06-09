@@ -286,7 +286,7 @@ FT_BEGIN_HEADER
 #if _WIN64
   typedef signed __int64  FT_F26Dot6;
 #else
-  typedef unsigned long FT_F26Dot6;
+  typedef signed long FT_F26Dot6;
 #endif
 
 
