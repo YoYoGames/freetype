@@ -108,15 +108,28 @@ jobs:
           libpng \
           pkg-config \
           cmake
-    - name: Setup Paths
-      run: |
-        export PKG_CONFIG_PATH="/opt/homebrew/Cellar/harfbuzz/7.3.0/lib/pkgconfig:/opt/homebrew/Cellar/libpng/1.6.39/lib/pkgconfig"
-        export CMAKE_PREFIX_PATH=$(brew --prefix)
     - uses: actions/checkout@v3
-    - name: Run on architecture
+    - name: Build FreeType
       run: |
-        cmake -B build -D BUILD_SHARED_LIBS=true -D CMAKE_BUILD_TYPE=${{ matrix.config }} -D CMAKE_OSX_ARCHITECTURES=arm64 -D FT_REQUIRE_PNG=TRUE -D FT_REQUIRE_HARFBUZZ=TRUE
-        cmake --build build --config ${{ matrix.config }}
+        # CMAKE_PREFIX_PATH:
+        # On homebrew for arm, the default path is /opt/homebrew
+        # On Intel macs, it's /usr/local
+        # CMAKE_OSX_ARCHITECTURE:
+        # For arm, it's arm64. This selects the appropriate SDK
+        # CMAKE_SYSTEM_PROCESSOR:
+        # Has to be set so that CMake knows if we're cross-compiling
+        # CMAKE_IGNORE_PATH:
+        # Ignore the homebrew path for the wrong arch
+        cmake -B build \
+          -D CMAKE_PREFIX_PATH=/opt/homebrew  \
+          -D CMAKE_OSX_ARCHITECTURES=arm64 \
+          -D CMAKE_SYSTEM_PROCESSOR=arm64 \
+          -D CMAKE_IGNORE_PATH=/usr/local \
+          -D BUILD_SHARED_LIBS=true \
+          -D CMAKE_BUILD_TYPE=${{ matrix.config }} \
+          -D FT_REQUIRE_PNG=TRUE \
+          -D FT_REQUIRE_HARFBUZZ=TRUE
+        cmake --build build --config ${{ matrix.config }} --parallel
     - uses: actions/upload-artifact@v3.1.2
       with:
         name: freetype-${{ matrix.arch }}-macos-${{ matrix.config }}
