@@ -159,7 +159,6 @@ else ()
   endif ()
 endif ()
 
-
 project(freetype C)
 
 set(VERSION_MAJOR "2")
@@ -236,10 +235,6 @@ endif ()
 # Add local cmake modules
 list(APPEND CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/builds/cmake)
 
-message("system: ${CMAKE_SYSTEM_PREFIX_PATH}")
-set(CMAKE_FIND_FRAMEWORK NEVER)
-set(CMAKE_FIND_APPBUNDLE NEVER)
-set(CMAKE_FIND_USE_CMAKE_SYSTEM_PATH OFF)
 
 if (BUILD_FRAMEWORK)
   if (NOT "${CMAKE_GENERATOR}" STREQUAL "Xcode")
@@ -253,7 +248,6 @@ endif ()
 
 # Find dependencies
 include(FindPkgConfig)
-
 if (NOT FT_DISABLE_HARFBUZZ)
   set(HARFBUZZ_MIN_VERSION "2.0.0")
   if (FT_REQUIRE_HARFBUZZ)
