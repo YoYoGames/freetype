@@ -259,7 +259,7 @@ endif ()
 
 if (NOT FT_DISABLE_PNG)
   if (FT_REQUIRE_PNG)
-    find_package(PNG 1.6 REQUIRED)
+    find_package(PNG REQUIRED)
   else ()
     find_package(PNG)
   endif ()

@@ -107,8 +107,7 @@ jobs:
         arch -arm64 brew install \
           harfbuzz \
           libpng \
-          pkg-config \
-          cmake
+          pkg-config
     - uses: actions/checkout@v3
     - name: Build FreeType
       run: |
@@ -121,6 +120,7 @@ jobs:
         # Has to be set so that CMake knows if we're cross-compiling
         # CMAKE_IGNORE_PATH:
         # Ignore the homebrew path for the wrong arch
+        cmake --version
         cmake -B build \
           -D CMAKE_PREFIX_PATH=/opt/homebrew  \
           -D CMAKE_OSX_ARCHITECTURES=arm64 \
