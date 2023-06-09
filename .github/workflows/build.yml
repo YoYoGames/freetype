@@ -104,7 +104,7 @@ jobs:
     - name: Install Dependencies
       run: |
         arch -arm64 brew --prefix
-        arch -arm64 brew reinstall \
+        arch -arm64 brew install \
           harfbuzz \
           libpng \
           pkg-config \
@@ -127,6 +127,8 @@ jobs:
           -D CMAKE_SYSTEM_PROCESSOR=arm64 \
           -D CMAKE_IGNORE_PATH=/usr/local \
           -D BUILD_SHARED_LIBS=true \
+          -D PNG_LIBRARY=/opt/homebrew/Cellar/libpng/1.6.39/lib/libpng16.a \
+          -D PNG_INCLUDE_DIR=/opt/homebrew/Cellar/libpng/1.6.39/include \
           -D CMAKE_BUILD_TYPE=${{ matrix.config }} \
           -D FT_REQUIRE_PNG=TRUE \
           -D FT_REQUIRE_HARFBUZZ=TRUE
