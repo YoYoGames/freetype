@@ -417,14 +417,16 @@
 
         {
           FT_Int  nn;
-          FT_Int  pp, first, last;
+          FT_Int  first = 0;
+          FT_Int  last  = -1;
 
 
-          last = -1;
-          for ( nn = 0; nn < outline.n_contours; nn++ )
+          for ( nn = 0; nn < outline.n_contours; first = last + 1, nn++ )
           {
-            first = last + 1;
-            last  = outline.contours[nn];
+            FT_Int  pp;
+
+
+            last = outline.contours[nn];
 
             /* Avoid single-point contours since they are never rasterized. */
             /* In some fonts, they correspond to mark attachment points     */
@@ -739,11 +741,9 @@
                     ( dim == AF_DIMENSION_HORZ ) ? 'H' : 'V',
                     nn, blue->ref.org, blue->shoot.org ));
         FT_TRACE5(( "     ref:   cur=%.2f fit=%.2f\n",
-                    (double)blue->ref.cur / 64,
-                    (double)blue->ref.fit / 64 ));
+                    blue->ref.cur / 64.0, blue->ref.fit / 64.0 ));
         FT_TRACE5(( "     shoot: cur=%.2f fit=%.2f\n",
-                    (double)blue->shoot.cur / 64,
-                    (double)blue->shoot.fit / 64 ));
+                    blue->shoot.cur / 64.0, blue->shoot.fit / 64.0 ));
 
         blue->flags |= AF_CJK_BLUE_ACTIVE;
       }
@@ -1629,10 +1629,8 @@
     FT_TRACE5(( "  CJKLINK: edge %ld @%d (opos=%.2f) linked to %.2f,"
                 " dist was %.2f, now %.2f\n",
                 stem_edge - hints->axis[dim].edges, stem_edge->fpos,
-                (double)stem_edge->opos / 64,
-                (double)stem_edge->pos / 64,
-                (double)dist / 64,
-                (double)fitted_width / 64 ));
+                stem_edge->opos / 64.0, stem_edge->pos / 64.0,
+                dist / 64.0, fitted_width / 64.0 ));
   }
 
 
@@ -1852,8 +1850,8 @@
 #ifdef FT_DEBUG_LEVEL_TRACE
         FT_TRACE5(( "  CJKBLUE: edge %ld @%d (opos=%.2f) snapped to %.2f,"
                     " was %.2f\n",
-                    edge1 - edges, edge1->fpos, (double)edge1->opos / 64,
-                    (double)blue->fit / 64, (double)edge1->pos / 64 ));
+                    edge1 - edges, edge1->fpos, edge1->opos / 64.0,
+                    blue->fit / 64.0, edge1->pos / 64.0 ));
 
         num_actions++;
 #endif
@@ -2026,8 +2024,8 @@
 #if 0
       printf( "stem (%d,%d) adjusted (%.1f,%.1f)\n",
                edge - edges, edge2 - edges,
-               (double)( edge->pos - edge->opos ) / 64,
-               (double)( edge2->pos - edge2->opos ) / 64 );
+               ( edge->pos - edge->opos ) / 64.0,
+               ( edge2->pos - edge2->opos ) / 64.0 );
 #endif
 
       anchor = edge;

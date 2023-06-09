@@ -375,14 +375,14 @@ FT_BEGIN_HEADER
 #ifdef FT_DEBUG_AUTOFIT
 
 #define AF_HINTS_DO_HORIZONTAL( h )                                     \
-          ( !af_debug_disable_horz_hints_                            && \
+          ( !_af_debug_disable_horz_hints                            && \
             !AF_HINTS_TEST_SCALER( h, AF_SCALER_FLAG_NO_HORIZONTAL ) )
 
 #define AF_HINTS_DO_VERTICAL( h )                                     \
-          ( !af_debug_disable_vert_hints_                          && \
+          ( !_af_debug_disable_vert_hints                          && \
             !AF_HINTS_TEST_SCALER( h, AF_SCALER_FLAG_NO_VERTICAL ) )
 
-#define AF_HINTS_DO_BLUES( h )  ( !af_debug_disable_blue_hints_ )
+#define AF_HINTS_DO_BLUES( h )  ( !_af_debug_disable_blue_hints )
 
 #else /* !FT_DEBUG_AUTOFIT */
 

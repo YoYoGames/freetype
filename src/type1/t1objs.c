@@ -167,7 +167,8 @@
       FT_Module  module;
 
 
-      module = FT_Get_Module( slot->library, "pshinter" );
+      module = FT_Get_Module( slot->face->driver->root.library,
+                              "pshinter" );
       if ( module )
       {
         T1_Hints_Funcs  funcs;

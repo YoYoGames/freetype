@@ -264,7 +264,7 @@
     }
 
     FT_TRACE6(( "T1_Compute_Max_Advance: max advance: %f\n",
-                (double)*max_advance / 65536 ));
+                *max_advance / 65536.0 ));
 
     psaux->t1_decoder_funcs->done( &decoder );
 

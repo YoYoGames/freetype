@@ -2378,7 +2378,7 @@
 #else /* !FT_CONFIG_OPTION_USE_BROTLI */
 
   /* ANSI C doesn't like empty source files */
-  typedef int  sfwoff2_dummy_;
+  typedef int  _sfwoff2_dummy;
 
 #endif /* !FT_CONFIG_OPTION_USE_BROTLI */
 

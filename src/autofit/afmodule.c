@@ -43,14 +43,14 @@
 
 #endif
 
-  int  af_debug_disable_horz_hints_;
-  int  af_debug_disable_vert_hints_;
-  int  af_debug_disable_blue_hints_;
+  int  _af_debug_disable_horz_hints;
+  int  _af_debug_disable_vert_hints;
+  int  _af_debug_disable_blue_hints;
 
   /* we use a global object instead of a local one for debugging */
-  static AF_GlyphHintsRec  af_debug_hints_rec_[1];
+  static AF_GlyphHintsRec  _af_debug_hints_rec[1];
 
-  void*  af_debug_hints_ = af_debug_hints_rec_;
+  void*  _af_debug_hints = _af_debug_hints_rec;
 #endif
 
 #include <freetype/internal/ftobjs.h>
@@ -423,8 +423,8 @@
     FT_UNUSED( ft_module );
 
 #ifdef FT_DEBUG_AUTOFIT
-    if ( af_debug_hints_rec_->memory )
-      af_glyph_hints_done( af_debug_hints_rec_ );
+    if ( _af_debug_hints_rec->memory )
+      af_glyph_hints_done( _af_debug_hints_rec );
 #endif
   }
 
@@ -443,7 +443,7 @@
 
     /* in debug mode, we use a global object that survives this routine */
 
-    AF_GlyphHints  hints = af_debug_hints_rec_;
+    AF_GlyphHints  hints = _af_debug_hints_rec;
     AF_LoaderRec   loader[1];
 
     FT_UNUSED( size );

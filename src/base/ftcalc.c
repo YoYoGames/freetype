@@ -1103,7 +1103,7 @@
     for ( i = 0; i < count; ++i )
       temp += (FT_Int64)s[i] * f[i];
 
-    return (FT_Int32)( ( temp + 0x8000 ) >> 16 );
+    return ( temp + 0x8000 ) >> 16;
 #else
     temp.hi = 0;
     temp.lo = 0;

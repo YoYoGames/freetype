@@ -1193,7 +1193,7 @@
           goto Fail;
 
         p += 1;  /* skip padding */
-        FALL_THROUGH;
+        /* fall-through */
 
       case 9:
         loader = tt_sbit_decoder_load_compound;
@@ -1593,7 +1593,7 @@
     return error;
   }
 
-  FT_LOCAL_DEF( FT_Error )
+  FT_LOCAL( FT_Error )
   tt_face_load_sbit_image( TT_Face              face,
                            FT_ULong             strike_index,
                            FT_UInt              glyph_index,
@@ -1677,7 +1677,7 @@
 #else /* !TT_CONFIG_OPTION_EMBEDDED_BITMAPS */
 
   /* ANSI C doesn't like empty source files */
-  typedef int  tt_sbit_dummy_;
+  typedef int  _tt_sbit_dummy;
 
 #endif /* !TT_CONFIG_OPTION_EMBEDDED_BITMAPS */
 

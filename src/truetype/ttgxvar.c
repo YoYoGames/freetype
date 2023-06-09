@@ -448,8 +448,8 @@
           FT_fdot14ToFixed( FT_GET_SHORT() );
 
         FT_TRACE5(( "    mapping %.5f to %.5f\n",
-                    (double)segment->correspondence[j].fromCoord / 65536,
-                    (double)segment->correspondence[j].toCoord / 65536 ));
+                    segment->correspondence[j].fromCoord / 65536.0,
+                    segment->correspondence[j].toCoord / 65536.0 ));
       }
 
       FT_TRACE5(( "\n" ));
@@ -1004,16 +1004,13 @@
     GX_ItemVarData    varData;
     FT_ItemVarDelta*  deltaSet;
 
-    FT_UInt          master, j;
-    FT_Fixed*        scalars = NULL;
-    FT_ItemVarDelta  returnValue;
+    FT_UInt           master, j;
+    FT_Fixed*         scalars;
+    FT_ItemVarDelta   returnValue;
 
 
-    if ( !face->blend || !face->blend->normalizedcoords )
-      return 0;
-
-    /* OpenType 1.8.4+: No variation data for this item */
-    /* as indices have special value 0xFFFF.            */
+    /* OpenType 1.8.4+: No variation data for this item
+     *  as indices have special value 0xFFFF. */
     if ( outerIndex == 0xFFFF && innerIndex == 0xFFFF )
       return 0;
 
@@ -1813,7 +1810,7 @@
           blend->tuplecoords[i * gvar_head.axisCount + j] =
             FT_fdot14ToFixed( FT_GET_SHORT() );
           FT_TRACE5(( "%.5f ",
-            (double)blend->tuplecoords[i * gvar_head.axisCount + j] / 65536 ));
+            blend->tuplecoords[i * gvar_head.axisCount + j] / 65536.0 ));
         }
         FT_TRACE5(( "]\n" ));
       }
@@ -1884,7 +1881,7 @@
     for ( i = 0; i < blend->num_axis; i++ )
     {
       FT_TRACE6(( "    axis %d coordinate %.5f:\n",
-                  i, (double)blend->normalizedcoords[i] / 65536 ));
+                  i, blend->normalizedcoords[i] / 65536.0 ));
 
       /* It's not clear why (for intermediate tuples) we don't need     */
       /* to check against start/end -- the documentation says we don't. */
@@ -1907,7 +1904,7 @@
       if ( blend->normalizedcoords[i] == tuple_coords[i] )
       {
         FT_TRACE6(( "      tuple coordinate %.5f fits perfectly\n",
-                    (double)tuple_coords[i] / 65536 ));
+                    tuple_coords[i] / 65536.0 ));
         /* `apply' does not change */
         continue;
       }
@@ -1920,13 +1917,13 @@
              blend->normalizedcoords[i] > FT_MAX( 0, tuple_coords[i] ) )
         {
           FT_TRACE6(( "      tuple coordinate %.5f is exceeded, stop\n",
-                      (double)tuple_coords[i] / 65536 ));
+                      tuple_coords[i] / 65536.0 ));
           apply = 0;
           break;
         }
 
         FT_TRACE6(( "      tuple coordinate %.5f fits\n",
-                    (double)tuple_coords[i] / 65536 ));
+                    tuple_coords[i] / 65536.0 ));
         apply = FT_MulDiv( apply,
                            blend->normalizedcoords[i],
                            tuple_coords[i] );
@@ -1940,15 +1937,15 @@
         {
           FT_TRACE6(( "      intermediate tuple range ]%.5f;%.5f[ is exceeded,"
                       " stop\n",
-                      (double)im_start_coords[i] / 65536,
-                      (double)im_end_coords[i] / 65536 ));
+                      im_start_coords[i] / 65536.0,
+                      im_end_coords[i] / 65536.0 ));
           apply = 0;
           break;
         }
 
         FT_TRACE6(( "      intermediate tuple range ]%.5f;%.5f[ fits\n",
-                    (double)im_start_coords[i] / 65536,
-                    (double)im_end_coords[i] / 65536 ));
+                    im_start_coords[i] / 65536.0,
+                    im_end_coords[i] / 65536.0 ));
         if ( blend->normalizedcoords[i] < tuple_coords[i] )
           apply = FT_MulDiv( apply,
                              blend->normalizedcoords[i] - im_start_coords[i],
@@ -1960,7 +1957,7 @@
       }
     }
 
-    FT_TRACE6(( "    apply factor is %.5f\n", (double)apply / 65536 ));
+    FT_TRACE6(( "    apply factor is %.5f\n", apply / 65536.0 ));
 
     return apply;
   }
@@ -1983,7 +1980,7 @@
     FT_Var_Axis*    a;
     GX_AVarSegment  av;
 
-    FT_Fixed*  new_normalized = NULL;
+    FT_Fixed*  new_normalized;
     FT_Fixed*  old_normalized;
 
 
@@ -2008,15 +2005,15 @@
       FT_Fixed  coord = coords[i];
 
 
-      FT_TRACE5(( "    %d: %.5f\n", i, (double)coord / 65536 ));
+      FT_TRACE5(( "    %d: %.5f\n", i, coord / 65536.0 ));
       if ( coord > a->maximum || coord < a->minimum )
       {
         FT_TRACE1(( "ft_var_to_normalized: design coordinate %.5f\n",
-                    (double)coord / 65536 ));
+                    coord / 65536.0 ));
         FT_TRACE1(( "                      is out of range [%.5f;%.5f];"
                     " clamping\n",
-                    (double)a->minimum / 65536,
-                    (double)a->maximum / 65536 ));
+                    a->minimum / 65536.0,
+                    a->maximum / 65536.0 ));
       }
 
       if ( coord > a->def )
@@ -2054,7 +2051,7 @@
           {
             if ( normalized[i] < av->correspondence[j].fromCoord )
             {
-              FT_TRACE5(( "  %.5f\n", (double)normalized[i] / 65536 ));
+              FT_TRACE5(( "  %.5f\n", normalized[i] / 65536.0 ));
 
               normalized[i] =
                 FT_MulDiv( normalized[i] - av->correspondence[j - 1].fromCoord,
@@ -2180,7 +2177,7 @@
                            av->correspondence[j - 1].toCoord ) +
               av->correspondence[j - 1].fromCoord;
 
-            FT_TRACE5(( "  %.5f\n", (double)design[i] / 65536 ));
+            FT_TRACE5(( "  %.5f\n", design[i] / 65536.0 ));
             break;
           }
         }
@@ -2510,9 +2507,9 @@
                     "  %10.5f  %10.5f  %10.5f  0x%04X%s\n",
                     i,
                     a->name,
-                    (double)a->minimum / 65536,
-                    (double)a->def / 65536,
-                    (double)a->maximum / 65536,
+                    a->minimum / 65536.0,
+                    a->def / 65536.0,
+                    a->maximum / 65536.0,
                     *axis_flags,
                     invalid ? " (invalid, disabled)" : "" ));
 #endif
@@ -2713,8 +2710,6 @@
           a->name = (char*)"OpticalSize";
         else if ( a->tag == TTAG_slnt )
           a->name = (char*)"Slant";
-        else if ( a->tag == TTAG_ital )
-          a->name = (char*)"Italic";
 
         next_name += 5;
         a++;
@@ -2776,11 +2771,11 @@
 
     for ( i = 0; i < num_coords; i++ )
     {
-      FT_TRACE5(( "    %.5f\n", (double)coords[i] / 65536 ));
+      FT_TRACE5(( "    %.5f\n", coords[i] / 65536.0 ));
       if ( coords[i] < -0x00010000L || coords[i] > 0x00010000L )
       {
         FT_TRACE1(( "TT_Set_MM_Blend: normalized design coordinate %.5f\n",
-                    (double)coords[i] / 65536 ));
+                    coords[i] / 65536.0 ));
         FT_TRACE1(( "                 is out of range [-1;1]\n" ));
         error = FT_THROW( Invalid_Argument );
         goto Exit;
@@ -3665,10 +3660,10 @@
           {
             FT_TRACE7(( "      %d: %f -> %f\n",
                         j,
-                        (double)( FT_fdot6ToFixed( face->cvt[j] ) +
-                                    old_cvt_delta ) / 65536,
-                        (double)( FT_fdot6ToFixed( face->cvt[j] ) +
-                                    cvt_deltas[j] ) / 65536 ));
+                        ( FT_fdot6ToFixed( face->cvt[j] ) +
+                          old_cvt_delta ) / 65536.0,
+                        ( FT_fdot6ToFixed( face->cvt[j] ) +
+                          cvt_deltas[j] ) / 65536.0 ));
             count++;
           }
 #endif
@@ -3707,10 +3702,10 @@
           {
             FT_TRACE7(( "      %d: %f -> %f\n",
                         pindex,
-                        (double)( FT_fdot6ToFixed( face->cvt[pindex] ) +
-                                    old_cvt_delta ) / 65536,
-                        (double)( FT_fdot6ToFixed( face->cvt[pindex] ) +
-                                    cvt_deltas[pindex] ) / 65536 ));
+                        ( FT_fdot6ToFixed( face->cvt[pindex] ) +
+                          old_cvt_delta ) / 65536.0,
+                        ( FT_fdot6ToFixed( face->cvt[pindex] ) +
+                          cvt_deltas[pindex] ) / 65536.0 ));
             count++;
           }
 #endif
@@ -3996,11 +3991,11 @@
                               FT_Vector*   unrounded )
   {
     FT_Error   error;
-    TT_Face    face        = loader->face;
-    FT_Stream  stream      = face->root.stream;
-    FT_Memory  memory      = stream->memory;
+    TT_Face    face = loader->face;
+    FT_Stream  stream = face->root.stream;
+    FT_Memory  memory = stream->memory;
     FT_UInt    glyph_index = loader->glyph_index;
-    FT_UInt    n_points    = (FT_UInt)outline->n_points + 4;
+    FT_UInt    n_points = (FT_UInt)outline->n_points + 4;
 
     FT_Vector*  points_org = NULL;  /* coordinates in 16.16 format */
     FT_Vector*  points_out = NULL;  /* coordinates in 16.16 format */
@@ -4226,14 +4221,14 @@
           {
             FT_TRACE7(( "      %d: (%f, %f) -> (%f, %f)\n",
                         j,
-                        (double)( FT_intToFixed( outline->points[j].x ) +
-                                    old_point_delta_x ) / 65536,
-                        (double)( FT_intToFixed( outline->points[j].y ) +
-                                    old_point_delta_y ) / 65536,
-                        (double)( FT_intToFixed( outline->points[j].x ) +
-                                    point_deltas_x[j] ) / 65536,
-                        (double)( FT_intToFixed( outline->points[j].y ) +
-                                    point_deltas_y[j] ) / 65536 ));
+                        ( FT_intToFixed( outline->points[j].x ) +
+                          old_point_delta_x ) / 65536.0,
+                        ( FT_intToFixed( outline->points[j].y ) +
+                          old_point_delta_y ) / 65536.0,
+                        ( FT_intToFixed( outline->points[j].x ) +
+                          point_deltas_x[j] ) / 65536.0,
+                        ( FT_intToFixed( outline->points[j].y ) +
+                          point_deltas_y[j] ) / 65536.0 ));
             count++;
           }
 #endif
@@ -4300,14 +4295,14 @@
           {
             FT_TRACE7(( "      %d: (%f, %f) -> (%f, %f)\n",
                         j,
-                        (double)( FT_intToFixed( outline->points[j].x ) +
-                                    old_point_delta_x ) / 65536,
-                        (double)( FT_intToFixed( outline->points[j].y ) +
-                                    old_point_delta_y ) / 65536,
-                        (double)( FT_intToFixed( outline->points[j].x ) +
-                                    point_deltas_x[j] ) / 65536,
-                        (double)( FT_intToFixed( outline->points[j].y ) +
-                                    point_deltas_y[j] ) / 65536 ));
+                        ( FT_intToFixed( outline->points[j].x ) +
+                          old_point_delta_x ) / 65536.0,
+                        ( FT_intToFixed( outline->points[j].y ) +
+                          old_point_delta_y ) / 65536.0,
+                        ( FT_intToFixed( outline->points[j].x ) +
+                          point_deltas_x[j] ) / 65536.0,
+                        ( FT_intToFixed( outline->points[j].y ) +
+                          point_deltas_y[j] ) / 65536.0 ));
             count++;
           }
 #endif
@@ -4565,7 +4560,7 @@
 #else /* !TT_CONFIG_OPTION_GX_VAR_SUPPORT */
 
   /* ANSI C doesn't like empty source files */
-  typedef int  tt_gxvar_dummy_;
+  typedef int  _tt_gxvar_dummy;
 
 #endif /* !TT_CONFIG_OPTION_GX_VAR_SUPPORT */
 
