@@ -114,29 +114,6 @@ jobs:
         path: build/*.so
         if-no-files-found: error
 
-  build_mac_arm64:
-    strategy:
-      fail-fast: false
-      matrix:
-        arch: [ aarch64 ]
-        config: [ Release, Debug ]
-    runs-on: [self-hosted, macOS]
-    name: "${{ matrix.arch }} macos ${{ matrix.config }}"
-    steps:
-    - name: Install Dependencies
-      run: |
-        arch -arm64 brew install cmake
-    - uses: actions/checkout@v3
-    - name: Run on architecture
-      run: |
-        cmake -B build -D BUILD_SHARED_LIBS=true -D CMAKE_BUILD_TYPE=${{ matrix.config }} -D CMAKE_OSX_ARCHITECTURES=arm64 -D CMAKE_SYSTEM_PROCESSOR=arm64 -D FT_DISABLE_PNG=TRUE -D FT_DISABLE_HARFBUZZ=TRUE -D FT_DISABLE_BROTLI=TRUE
-        cmake --build build --config ${{ matrix.config }}
-    - uses: actions/upload-artifact@v3.1.2
-      with:
-        name: freetype-${{ matrix.arch }}-macos-${{ matrix.config }}
-        path: build/*.dylib
-        if-no-files-found: error
-
   vendor_package:
     needs:
       - build_x86
