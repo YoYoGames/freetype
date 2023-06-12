@@ -140,6 +140,7 @@ jobs:
   vendor_package:
     needs:
       - build_x86
+      - build_mac_x86
       - build_linux_arm
       - build_windows_arm64
       - build_mac_arm64
