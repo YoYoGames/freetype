@@ -159,7 +159,6 @@ else ()
   endif ()
 endif ()
 
-
 project(freetype C)
 
 set(VERSION_MAJOR "2")
@@ -249,7 +248,6 @@ endif ()
 
 # Find dependencies
 include(FindPkgConfig)
-
 if (NOT FT_DISABLE_HARFBUZZ)
   set(HARFBUZZ_MIN_VERSION "2.0.0")
   if (FT_REQUIRE_HARFBUZZ)
