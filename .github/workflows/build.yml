@@ -1,0 +1,166 @@
+name: Build
+
+on:
+
+  workflow_dispatch:
+
+  push:
+
+  pull_request:
+
+
+
+
+permissions:
+  contents: write  #publish release
+
+
+jobs:
+
+  build_x86:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ windows, ubuntu ]
+        config: [ Release, Debug ]
+    runs-on: ${{ matrix.os }}-latest
+    name: "x86_64 ${{ matrix.os }} ${{ matrix.config }}"
+    steps:
+    - uses: actions/checkout@v3
+    - run: cmake -B build -D BUILD_SHARED_LIBS=true -D CMAKE_BUILD_TYPE=${{ matrix.config }}
+    - run: cmake --build build --config ${{ matrix.config }}
+    - uses: actions/upload-artifact@v3.1.2
+      with:
+        name: freetype-x86_64-${{ matrix.os }}-${{ matrix.config }}
+        path: build/${{ matrix.config }}
+        if-no-files-found: error
+      if: matrix.os == 'windows'
+    - uses: actions/upload-artifact@v3.1.2
+      with:
+        name: freetype-x86_64-${{ matrix.os }}-${{ matrix.config }}
+        path: build/*.so
+        if-no-files-found: error
+      if: matrix.os == 'ubuntu'
+    - uses: actions/upload-artifact@v3.1.2
+      with:
+        name: freetype-x86_64-${{ matrix.os }}-${{ matrix.config }}
+        path: build/*.dylib
+        if-no-files-found: error
+      if: matrix.os == 'macos'
+
+  build_mac_x86:
+    strategy:
+      fail-fast: false
+      matrix:
+        config: [ Release, Debug ]
+    runs-on: macos-latest
+    name: "x86_64 macos ${{ matrix.config }}"
+    steps:
+    - name: Install Dependencies
+      run: |
+        brew install cmake
+    - uses: actions/checkout@v3
+    - name: Run on architecture
+      run: |
+        cmake -B build -D BUILD_SHARED_LIBS=true -D CMAKE_BUILD_TYPE=${{ matrix.config }} -D CMAKE_OSX_ARCHITECTURES=x86_64 -D CMAKE_SYSTEM_PROCESSOR=x86_64 -D FT_DISABLE_PNG=TRUE -D FT_DISABLE_HARFBUZZ=TRUE -D FT_DISABLE_BROTLI=TRUE
+        cmake --build build --config ${{ matrix.config }}
+    - uses: actions/upload-artifact@v3.1.2
+      with:
+        name: freetype-x86_64-macos-${{ matrix.config }}
+        path: build/*.dylib
+        if-no-files-found: error
+
+  build_windows_arm64:
+    strategy:
+      fail-fast: false
+      matrix:
+        config: [ Release, Debug ]
+    runs-on: windows-latest
+    name: "aarch64 windows ${{ matrix.config }}"
+    steps:
+    - uses: actions/checkout@v3
+    - name: Add MSBuild to PATH
+      uses: microsoft/setup-msbuild@v1.0.2
+    - run: MSBuild.exe -t:Rebuild -p:Configuration=${{ matrix.config }} -p:Platform=arm64 builds/windows/vc2010/freetype.vcxproj
+    - uses: actions/upload-artifact@v3.1.2
+      with:
+        name: freetype-aarch64-windows-${{ matrix.config }}
+        path: objs/ARM64/${{ matrix.config }}
+        if-no-files-found: error
+
+  build_linux_arm:
+    strategy:
+      fail-fast: false
+      matrix:
+        arch: [ armv7, aarch64, riscv64 ]
+        config: [ Release, Debug ]
+    runs-on: ubuntu-latest
+    name: "${{ matrix.arch }} ubuntu ${{ matrix.config }}"
+    steps:
+    - uses: actions/checkout@v3
+    - name: Run on architecture
+      uses: uraimo/run-on-arch-action@v2.5.0
+      with:
+        arch: ${{ matrix.arch }}
+        distro: ubuntu_latest
+        run: |
+          apt-get update
+          apt-get install -y cmake build-essential
+          cmake -B build -D BUILD_SHARED_LIBS=true -D CMAKE_BUILD_TYPE=${{ matrix.config }}
+          cmake --build build --config ${{ matrix.config }}
+    - uses: actions/upload-artifact@v3.1.2
+      with:
+        name: freetype-${{ matrix.arch }}-ubuntu-${{ matrix.config }}
+        path: build/*.so
+        if-no-files-found: error
+
+  build_mac_arm64:
+    strategy:
+      fail-fast: false
+      matrix:
+        arch: [ aarch64 ]
+        config: [ Release, Debug ]
+    runs-on: [self-hosted, macOS]
+    name: "${{ matrix.arch }} macos ${{ matrix.config }}"
+    steps:
+    - name: Install Dependencies
+      run: |
+        arch -arm64 brew install cmake
+    - uses: actions/checkout@v3
+    - name: Run on architecture
+      run: |
+        cmake -B build -D BUILD_SHARED_LIBS=true -D CMAKE_BUILD_TYPE=${{ matrix.config }} -D CMAKE_OSX_ARCHITECTURES=arm64 -D CMAKE_SYSTEM_PROCESSOR=arm64 -D FT_DISABLE_PNG=TRUE -D FT_DISABLE_HARFBUZZ=TRUE -D FT_DISABLE_BROTLI=TRUE
+        cmake --build build --config ${{ matrix.config }}
+    - uses: actions/upload-artifact@v3.1.2
+      with:
+        name: freetype-${{ matrix.arch }}-macos-${{ matrix.config }}
+        path: build/*.dylib
+        if-no-files-found: error
+
+  vendor_package:
+    needs:
+      - build_x86
+      - build_mac_x86
+      - build_linux_arm
+      - build_windows_arm64
+      - build_mac_arm64
+    runs-on: ubuntu-22.04
+    steps:
+    - uses: actions/download-artifact@v3.0.2
+      with:
+        path: freetype
+    - uses: actions/upload-artifact@v3.1.2
+      with:
+        name: freetype_vendor_package_all_builds
+        path: freetype
+        if-no-files-found: error
+    - run: 7z a -tzip freetype.zip freetype
+    - name: Create Release
+      uses: ncipollo/release-action@v1.12.0
+      with:
+        artifactErrorsFailBuild: true
+        artifacts: freetype.zip
+        prerelease: false
+        replacesArtifacts: true
+        tag: SHARPFONT-VER-2-12-1_${{ github.run_number }}-${{ github.run_attempt }}
+        allowUpdates: true
