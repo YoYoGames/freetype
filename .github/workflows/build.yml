@@ -120,7 +120,7 @@ jobs:
       matrix:
         arch: [ aarch64 ]
         config: [ Release, Debug ]
-    runs-on: [self-hosted, macOS]
+    runs-on: macos-13-xl
     name: "${{ matrix.arch }} macos ${{ matrix.config }}"
     steps:
     - name: Install Dependencies
