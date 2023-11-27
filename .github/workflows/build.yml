@@ -120,12 +120,12 @@ jobs:
       matrix:
         arch: [ aarch64 ]
         config: [ Release, Debug ]
-    runs-on: macos-12-xl
+    runs-on: macos-13-xl
     name: "${{ matrix.arch }} macos ${{ matrix.config }}"
     steps:
     - name: Install Dependencies
       run: |
-        arch -arm64 brew install cmake
+        brew install cmake
     - uses: actions/checkout@v3
     - name: Run on architecture
       run: |
